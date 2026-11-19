@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#1b2436">
+<title>班级班牌 · 手机端</title>
+<style>
+  :root{
+    --bg:#f2f4f8; --card:#ffffff; --line:#e3e7ef; --text:#1b2130; --muted:#6b7688;
+    --accent:#2f6bff; --accent-soft:#ecf2ff; --danger:#e0413a; --ok:#18a058;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.55;padding-bottom:78px;
+  }
+  header{
+    background:linear-gradient(135deg,#2f6bff,#5a4ad8);color:#fff;
+    padding:18px 18px 20px;position:sticky;top:0;z-index:20;
+  }
+  header .school{font-size:12px;opacity:.82;letter-spacing:.5px}
+  header .cls{font-size:20px;font-weight:600;margin-top:2px}
+  header .state{font-size:12.5px;opacity:.9;margin-top:6px}
+  main{padding:14px}
+  .card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+  .card h3{margin:0 0 12px;font-size:15px;font-weight:600}
+  .muted{color:var(--muted);font-size:12.5px}
+  textarea,input[type=text],input[type=password],select{
+    width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;
+    font-size:15px;font-family:inherit;color:var(--text);background:#fbfcfe;outline:none;
+  }
+  textarea:focus,input:focus,select:focus{border-color:var(--accent);background:#fff}
+  textarea{resize:vertical;min-height:88px;line-height:1.6}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    border:none;border-radius:10px;padding:12px 18px;font-size:15px;font-weight:600;
+    background:var(--accent);color:#fff;width:100%;margin-top:12px;
+  }
+  .btn:active{opacity:.86}
+  .btn.ghost{background:var(--accent-soft);color:var(--accent)}
+  .btn.danger{background:var(--danger)}
+  .btn.sm{padding:8px 12px;font-size:13px;width:auto;margin:0}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip{
+    background:#f4f6fa;border:1px solid var(--line);border-radius:999px;
+    padding:7px 13px;font-size:13px;color:#414c60;
+  }
+  .chip:active{background:var(--accent-soft);border-color:#cfdcff}
+  .switch-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)}
+  .switch-row:first-of-type{border-top:none}
+  .sw{position:relative;width:46px;height:27px;background:#d7dce6;border-radius:999px;transition:.18s;flex:0 0 auto}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;background:#fff;border-radius:50%;transition:.18s}
+  .sw.on{background:var(--accent)}
+  .sw.on::after{left:22px}
+  nav{
+    position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97);
+    border-top:1px solid var(--line);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+    backdrop-filter:blur(8px);z-index:30;
+  }
+  nav button{
+    flex:1;background:none;border:none;padding:6px 2px;font-size:11.5px;color:var(--muted);
+    display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;
+  }
+  nav button .ico{font-size:19px;line-height:1}
+  nav button.active{color:var(--accent);font-weight:600}
+  .tab{display:none}
+  .tab.active{display:block}
+  .grid{width:100%;border-collapse:collapse;font-size:12.5px}
+  .grid th,.grid td{border:1px solid var(--line);padding:7px 5px;text-align:center;vertical-align:middle}
+  .grid th{background:#f6f8fc;font-weight:600;color:#3c4658}
+  .grid td.cell{min-height:42px;height:42px;cursor:pointer}
+  .grid td.cell .s{font-weight:600;display:block;font-size:12.5px}
+  .grid td.cell .t{color:var(--muted);font-size:10.5px;display:block}
+  .grid td.cell.empty{color:#c2c9d6}
+  .grid td.cur{background:#fff6e5}
+  .rowline{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .rowline input[type=text]{flex:1;padding:8px 10px;font-size:13.5px}
+  .rowline input.time{width:82px;text-align:center;padding:8px 4px;font-size:13.5px}
+  .rowline select{width:96px;padding:8px 6px;font-size:13px}
+  .rowline .del{color:var(--danger);font-size:18px;padding:0 4px;background:none;border:none}
+  .dutyrow{margin-bottom:14px}
+  .dutyrow .dl{font-size:13px;font-weight:600;margin-bottom:6px;color:#3c4658}
+  .toast{
+    position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(10px);
+    background:rgba(28,34,48,.94);color:#fff;padding:11px 20px;border-radius:999px;
+    font-size:13.5px;opacity:0;transition:.22s;pointer-events:none;z-index:60;max-width:84vw;text-align:center;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .login{padding:36px 22px}
+  .login .logo{
+    width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#2f6bff,#5a4ad8);
+    color:#fff;font-size:28px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;
+  }
+  .hint{font-size:12.5px;color:var(--muted);margin-top:10px;text-align:center}
+  .statusline{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+
+<div id="loginView" style="display:none">
+  <div class="login">
+    <div class="logo">班</div>
+    <div class="card">
+      <h3 style="text-align:center">进入班级班牌</h3>
+      <input type="password" id="pinInput" inputmode="numeric" placeholder="请输入访问口令" style="text-align:center;letter-spacing:4px">
+      <button class="btn" onclick="doLogin()">进入</button>
+      <div class="hint" id="loginHint">口令在班牌的托盘菜单里可以看到</div>
+    </div>
+  </div>
+</div>
+
+<div id="appView" style="display:none">
+  <header>
+    <div class="school" id="hSchool">班级班牌</div>
+    <div class="cls" id="hClass">—</div>
+    <div class="state" id="hState">正在连接…</div>
+  </header>
+
+  <main>
+    <section class="tab active" id="tab-msg">
+      <div class="card">
+        <h3>发送消息到班牌</h3>
+        <textarea id="msgText" placeholder="例如：李明同学，请到办公室来一下"></textarea>
+        <div class="chips" id="quickChips"></div>
+        <div class="switch-row" style="margin-top:12px">
+          <div>
+            <div>紧急消息</div>
+            <div class="muted">不自动消失，需要老师点“知道了”</div>
+          </div>
+          <div class="sw" id="urgentSw" onclick="toggleUrgent()"></div>
+        </div>
+        <button class="btn" onclick="sendMessage()">发送到班牌</button>
+        <div class="muted" style="margin-top:10px">班牌会大字显示并朗读一遍，几秒后自动消失。</div>
+      </div>
+      <div class="card">
+        <h3>最近发送</h3>
+        <div id="historyList" class="muted">暂无记录</div>
+      </div>
+    </section>
+
+    <section class="tab" id="tab-course">
+      <div class="card">
+        <h3>本周课表</h3>
+        <div class="muted" style="margin-bottom:10px">点格子编辑科目和老师，填完点下面的保存。</div>
+        <div style="overflow-x:auto"><table class="grid" id="courseGrid"></table></div>
+        <button class="btn" onclick="saveCourses()">保存课表</button>
+      </div>
+    </section>
+
+    <section class="tab" id="tab-duty">
+      <div class="card">
+        <h3>值日安排</h3>
+        <div class="muted" style="margin-bottom:12px">每行一个同学，格式：姓名 分工。留空表示当天没有值日。</div>
+        <div id="dutyBox"></div>
+        <button class="btn" onclick="saveDuty()">保存值日表</button>
+      </div>
+    </section>
+
+    <section class="tab" id="tab-period">
+      <div class="card">
+        <h3>作息时间表</h3>
+        <div class="muted" style="margin-bottom:12px">班牌靠这张表判断“现在上什么课”，时间用 24 小时制。</div>
+        <div id="periodBox"></div>
+        <button class="btn ghost" onclick="addPeriod()">+ 添加一个节次</button>
+        <button class="btn" onclick="savePeriods()">保存时间表</button>
+      </div>
+    </section>
+
+    <section class="tab" id="tab-more">
+      <div class="card">
+        <h3>班牌设置</h3>
+        <div class="rowline"><span class="muted" style="flex:1">班级名称</span></div>
+        <input type="text" id="setClassName" placeholder="六年级(1)班">
+        <div class="rowline" style="margin-top:12px"><span class="muted" style="flex:1">学校名称</span></div>
+        <input type="text" id="setSchoolName" placeholder="迎春中学">
+        <div class="rowline" style="margin-top:12px"><span class="muted" style="flex:1">消息停留秒数</span></div>
+        <input type="text" id="setDuration" inputmode="numeric" placeholder="15">
+        <div class="switch-row" style="margin-top:12px">
+          <div>
+            <div>语音播报</div>
+            <div class="muted">收到消息时用机器人声音念一遍</div>
+          </div>
+          <div class="sw" id="speechSw" onclick="toggleSpeech()"></div>
+        </div>
+        <button class="btn" onclick="saveSettings()">保存设置</button>
+      </div>
+      <div class="card">
+        <h3>班牌状态</h3>
+        <div class="statusline"><span>访问地址</span><span id="setUrl">—</span></div>
+        <div class="statusline"><span>最后刷新</span><span id="setRefresh">—</span></div>
+        <button class="btn ghost" onclick="logout()">退出登录</button>
+      </div>
+    </section>
+  </main>
+
+  <nav>
+    <button class="active" data-tab="msg" onclick="switchTab('msg',this)"><span class="ico">💬</span>消息</button>
+    <button data-tab="course" onclick="switchTab('course',this)"><span class="ico">📅</span>课表</button>
+    <button data-tab="duty" onclick="switchTab('duty',this)"><span class="ico">🧹</span>值日</button>
+    <button data-tab="period" onclick="switchTab('period',this)"><span class="ico">⏱</span>时间表</button>
+    <button data-tab="more" onclick="switchTab('more',this)"><span class="ico">⚙️</span>设置</button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var API = "";
+var token = localStorage.getItem("cb_token") || "";
+var config = null;
+var urgent = false;
+var speechOn = true;
+
+var QUICK = ["某某同学来办公室","请全班同学回到座位","课代表收作业","安静，开始自习","值日生打扫卫生"];
+
+function $(id){ return document.getElementById(id); }
+
+function toast(text){
+  var t = $("toast");
+  t.textContent = text;
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.classList.remove("show"); }, 2200);
+}
+
+function api(path, method, body){
+  var opt = { method: method || "GET", headers: { "Content-Type":"application/json", "X-Token": token } };
+  if (body) opt.body = JSON.stringify(body);
+  return fetch(API + path, opt).then(function(r){
+    if (r.status === 401) { showLogin(); throw new Error("unauthorized"); }
+    return r.json();
+  });
+}
+
+function showLogin(){
+  $("loginView").style.display = "block";
+  $("appView").style.display = "none";
+}
+
+function showApp(){
+  $("loginView").style.display = "none";
+  $("appView").style.display = "block";
+}
+
+function doLogin(){
+  var pin = $("pinInput").value.trim();
+  fetch(API + "/api/login", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ pin: pin })
+  }).then(function(r){ return r.json(); }).then(function(res){
+    if (!res.ok) { $("loginHint").textContent = res.error || "口令不正确"; return; }
+    token = res.token;
+    localStorage.setItem("cb_token", token);
+    boot();
+  }).catch(function(){ $("loginHint").textContent = "连不上班牌，请确认在同一 WiFi"; });
+}
+
+function logout(){
+  localStorage.removeItem("cb_token");
+  token = "";
+  showLogin();
+}
+
+function switchTab(name, btn){
+  var tabs = document.querySelectorAll(".tab");
+  for (var i=0;i<tabs.length;i++){
+    tabs[i].classList.toggle("active", tabs[i].id === "tab-" + name);
+  }
+  var btns = document.querySelectorAll("nav button");
+  for (var j=0;j<btns.length;j++) btns[j].classList.remove("active");
+  if (btn) btn.classList.add("active");
+}
+
+function toggleUrgent(){
+  urgent = !urgent;
+  $("urgentSw").classList.toggle("on", urgent);
+}
+
+function toggleSpeech(){
+  speechOn = !speechOn;
+  $("speechSw").classList.toggle("on", speechOn);
+}
+
+function refreshState(){
+  api("/api/state","GET").then(function(s){
+    if (!s || !s.ok) return;
+    $("hSchool").textContent = s.schoolName || "班级班牌";
+    $("hClass").textContent = s.className || "";
+    $("hState").textContent = s.badge + " · " + s.headline + (s.countdown ? " · " + s.countdown : "");
+    $("setRefresh").textContent = s.serverTime || "—";
+  }).catch(function(){});
+}
+
+function loadConfig(){
+  return api("/api/config","GET").then(function(c){
+    if (!c || !c.ok) return;
+    config = c;
+    $("setClassName").value = c.classInfo ? (c.classInfo.ClassName || "") : "";
+    $("setSchoolName").value = c.classInfo ? (c.classInfo.SchoolName || "") : "";
+    $("setDuration").value = c.settings ? (c.settings.messageDurationSeconds || 15) : 15;
+    speechOn = c.settings ? !!c.settings.speechEnabled : true;
+    $("speechSw").classList.toggle("on", speechOn);
+    renderCourses();
+    renderDuty();
+    renderPeriods();
+    $("setUrl").textContent = location.host;
+  });
+}
+
+function lessonPeriods(){
+  return (config.periods || []).filter(function(p){ return p.kind === "Lesson"; });
+}
+
+function renderCourses(){
+  var periods = lessonPeriods();
+  var days = ["周一","周二","周三","周四","周五"];
+  var html = "<tr><th style='width:52px'>节次</th>";
+  for (var d=0; d<days.length; d++) html += "<th>" + days[d] + "</th>";
+  html += "</tr>";
+
+  for (var i=0; i<periods.length; i++){
+    var p = periods[i];
+    html += "<tr><td style='font-size:11px;line-height:1.2;padding:4px 2px'>" + p.name +
+            "<br><span class='muted' style='font-size:9.5px'>" + p.start + "</span></td>";
+    for (var d2=1; d2<=5; d2++){
+      var c = findCourse(d2, p.id);
+      var sub = c ? (c.Subject || "") : "";
+      var tea = c ? (c.Teacher || "") : "";
+      html += "<td class='cell" + (sub ? "" : " empty") + "' data-day='" + d2 + "' data-pid='" + p.id + "' " +
+              "onclick='editCell(this,\"" + escapeAttr(sub) + "\",\"" + escapeAttr(tea) + "\")'>" +
+              "<span class='s'>" + (sub || "＋") + "</span>" +
+              (tea ? "<span class='t'>" + tea + "</span>" : "") +
+              "</td>";
+    }
+    html += "</tr>";
+  }
+  $("courseGrid").innerHTML = html;
+}
+
+function escapeAttr(s){
+  return (s || "").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function findCourse(day, pid){
+  if (!config || !config.courses) return null;
+  for (var i=0;i<config.courses.length;i++){
+    var c = config.courses[i];
+    var d = c.Day !== undefined ? c.Day : c.day;
+    var p = c.PeriodId !== undefined ? c.PeriodId : c.periodId;
+    if (d === day && p === pid) return { Subject: c.Subject || c.subject || "", Teacher: c.Teacher || c.teacher || "" };
+  }
+  return null;
+}
+
+function editCell(td, subject, teacher){
+  var v = prompt("科目 / 老师（用空格分隔，留空表示清空）", subject + (teacher ? " " + teacher : ""));
+  if (v === null) return;
+  v = v.trim();
+  var parts = v.split(/\s+/).filter(function(x){ return x.length; });
+  var sub = parts.length > 0 ? parts[0] : "";
+  var tea = parts.length > 1 ? parts.slice(1).join(" ") : "";
+  td.querySelector(".s").textContent = sub || "＋";
+  td.querySelector(".t") && (td.querySelector(".t").textContent = tea);
+  if (tea && !td.querySelector(".t")) {
+    var span = document.createElement("span");
+    span.className = "t";
+    span.textContent = tea;
+    td.appendChild(span);
+  }
+  if (!sub && !tea) td.classList.add("empty"); else td.classList.remove("empty");
+  td.dataset.subject = sub;
+  td.dataset.teacher = tea;
+  td.dataset.dirty = "1";
+  if (!td.dataset.subject) td.dataset.subject = sub;
+}
+
+function saveCourses(){
+  var cells = document.querySelectorAll("#courseGrid td.cell");
+  var courses = [];
+  for (var i=0;i<cells.length;i++){
+    var td = cells[i];
+    var sub = td.dataset.subject !== undefined ? td.dataset.subject :
+              (td.querySelector(".s").textContent === "＋" ? "" : td.querySelector(".s").textContent);
+    var teaEl = td.querySelector(".t");
+    var tea = td.dataset.teacher !== undefined ? td.dataset.teacher : (teaEl ? teaEl.textContent : "");
+    if (sub) courses.push({ Day: parseInt(td.dataset.day), PeriodId: td.dataset.pid, Subject: sub, Teacher: tea });
+  }
+  api("/api/config","POST",{ courses: courses }).then(function(r){
+    if (r && r.ok) { toast("课表已保存"); loadConfig(); } else toast("保存失败");
+  }).catch(function(){ toast("保存失败"); });
+}
+
+function renderDuty(){
+  var names = ["周一","周二","周三","周四","周五","周六","周日"];
+  var html = "";
+  for (var d=1; d<=5; d++){
+    var members = [];
+    if (config.duty){
+      for (var i=0;i<config.duty.length;i++){
+        var dd = config.duty[i];
+        var day = dd.Day !== undefined ? dd.Day : dd.day;
+        if (day === d){
+          var ms = dd.Members || dd.members || [];
+          for (var j=0;j<ms.length;j++){
+            var n = ms[j].Name || ms[j].name || "";
+            var t = ms[j].Task || ms[j].task || "";
+            if (n) members.push(n + " " + t);
+          }
+        }
+      }
+    }
+    html += "<div class='dutyrow'><div class='dl'>" + names[d-1] + "</div>" +
+            "<textarea data-day='" + d + "' placeholder='例如：张三 扫地'>" + members.join("\n") + "</textarea></div>";
+  }
+  $("dutyBox").innerHTML = html;
+}
+
+function saveDuty(){
+  var areas = document.querySelectorAll("#dutyBox textarea");
+  var duty = [];
+  for (var i=0;i<areas.length;i++){
+    var day = parseInt(areas[i].dataset.day);
+    var lines = areas[i].value.split("\n");
+    var members = [];
+    for (var j=0;j<lines.length;j++){
+      var line = lines[j].trim();
+      if (!line) continue;
+      var parts = line.split(/\s+/);
+      var name = parts[0];
+      var task = parts.length > 1 ? parts.slice(1).join(" ") : "";
+      members.push({ Name: name, Task: task });
+    }
+    duty.push({ Day: day, Members: members });
+  }
+  api("/api/config","POST",{ duty: duty }).then(function(r){
+    if (r && r.ok) { toast("值日表已保存"); loadConfig(); } else toast("保存失败");
+  }).catch(function(){ toast("保存失败"); });
+}
+
+function renderPeriods(){
+  var kindNames = { Lesson:"上课", Break:"课间", Lunch:"午休", Other:"其它" };
+  var html = "";
+  for (var i=0;i<config.periods.length;i++){
+    var p = config.periods[i];
+    html += "<div class='rowline' data-id='" + p.id + "'>" +
+      "<input type='text' class='pname' value=\"" + escapeAttr(p.name) + "\" placeholder='名称'>" +
+      "<input type='text' class='time pstart' value='" + p.start + "' placeholder='08:00'>" +
+      "<input type='text' class='time pend' value='" + p.end + "' placeholder='08:40'>" +
+      "<select class='pkind'>";
+    for (var k in kindNames){
+      html += "<option value='" + k + "'" + (p.kind === k ? " selected" : "") + ">" + kindNames[k] + "</option>";
+    }
+    html += "</select><button class='del' onclick='removePeriod(this)'>×</button></div>";
+  }
+  $("periodBox").innerHTML = html;
+}
+
+function addPeriod(){
+  var box = document.createElement("div");
+  box.className = "rowline";
+  box.dataset.id = "";
+  box.innerHTML = "<input type='text' class='pname' placeholder='名称'>" +
+    "<input type='text' class='time pstart' value='08:00'>" +
+    "<input type='text' class='time pend' value='08:40'>" +
+    "<select class='pkind'><option value='Lesson'>上课</option><option value='Break'>课间</option>" +
+    "<option value='Lunch'>午休</option><option value='Other'>其它</option></select>" +
+    "<button class='del' onclick='removePeriod(this)'>×</button>";
+  $("periodBox").appendChild(box);
+}
+
+function removePeriod(btn){
+  btn.parentNode.remove();
+}
+
+function savePeriods(){
+  var rows = document.querySelectorAll("#periodBox .rowline");
+  var periods = [];
+  for (var i=0;i<rows.length;i++){
+    var r = rows[i];
+    var name = r.querySelector(".pname").value.trim();
+    var start = r.querySelector(".pstart").value.trim();
+    var end = r.querySelector(".pend").value.trim();
+    var kind = r.querySelector(".pkind").value;
+    if (!name || !start || !end) continue;
+    periods.push({ id: r.dataset.id || "", name: name, start: start, end: end, kind: kind });
+  }
+  if (!periods.length) { toast("至少保留一个节次"); return; }
+  api("/api/config","POST",{ periods: periods }).then(function(r){
+    if (r && r.ok) { toast("时间表已保存"); loadConfig(); } else toast("保存失败");
+  }).catch(function(){ toast("保存失败"); });
+}
+
+function saveSettings(){
+  var payload = {
+    classInfo: {
+      SchoolName: $("setSchoolName").value.trim(),
+      ClassName: $("setClassName").value.trim(),
+      Motto: ""
+    },
+    settings: {
+      SpeechEnabled: speechOn,
+      MessageDurationSeconds: parseInt($("setDuration").value) || 15
+    }
+  };
+  api("/api/config","POST",payload).then(function(r){
+    if (r && r.ok) { toast("设置已保存"); loadConfig(); } else toast("保存失败");
+  }).catch(function(){ toast("保存失败"); });
+}
+
+function sendMessage(){
+  var text = $("msgText").value.trim();
+  if (!text) { toast("先写点内容"); return; }
+  api("/api/message","POST",{ text:text, urgent:urgent }).then(function(r){
+    if (r && r.ok) {
+      toast(urgent ? "已发送（紧急）" : "已发送到班牌");
+      $("msgText").value = "";
+      urgent = false;
+      $("urgentSw").classList.remove("on");
+    } else toast((r && r.error) || "发送失败");
+  }).catch(function(){ toast("发送失败"); });
+}
+
+function loadHistory(){
+  api("/api/messages","GET").then(function(r){
+    if (!r || !r.ok) return;
+    if (!r.items.length) { $("historyList").textContent = "暂无记录"; return; }
+    var html = "";
+    for (var i=0;i<r.items.length;i++){
+      var m = r.items[i];
+      html += "<div style='padding:8px 0;border-top:1px solid #eef1f6'>" +
+              (m.urgent ? "<span style='color:#e0413a;font-size:11px;'>[紧急] </span>" : "") +
+              m.text + "<div class='muted'>" + m.time + " · " + m.source + "</div></div>";
+    }
+    $("historyList").innerHTML = html;
+  }).catch(function(){});
+}
+
+function renderQuick(){
+  var html = "";
+  for (var i=0;i<QUICK.length;i++){
+    html += "<span class='chip' onclick=\"$('msgText').value='" + QUICK[i] + "'\">" + QUICK[i] + "</span>";
+  }
+  $("quickChips").innerHTML = html;
+}
+
+function boot(){
+  showApp();
+  renderQuick();
+  loadConfig().then(function(){
+    refreshState();
+    loadHistory();
+  }).catch(function(){});
+  setInterval(refreshState, 10000);
+}
+
+if (token) { boot(); } else { showLogin(); }
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# 统一换行符：仓库里存 LF，Windows 检出时自动转 CRLF
+* text=auto
+
+*.cs       text diff=csharp
+*.xaml     text
+*.csproj   text
+*.sln      text
+*.slnx     text
+*.config   text
+*.md       text
+*.html     text
+*.json     text
+*.py       text
+*.resx     text
+
+*.bat      text eol=crlf
+*.cmd      text eol=crlf
+
+# 二进制文件不做换行处理
+*.png      binary
+*.ico      binary
+*.exe      binary
+*.dll      binary

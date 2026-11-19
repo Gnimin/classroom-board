@@ -1,0 +1,193 @@
+﻿<local:BoardWindowBase x:Class="NEWCLASSroom.Views.SignboardWindow"
+        xmlns:local="clr-namespace:NEWCLASSroom.Views"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="班级班牌"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Ideal"
+        FontFamily="Microsoft YaHei UI, Segoe UI">
+
+    <local:BoardWindowBase.Resources>
+        <LinearGradientBrush x:Key="BoardBackground" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#101A2C" Offset="0"/>
+            <GradientStop Color="#0C1220" Offset="0.55"/>
+            <GradientStop Color="#111B30" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="CardBrush" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#1A2439" Offset="0"/>
+            <GradientStop Color="#161E30" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="AccentBrush" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#4D8DFF" Offset="0"/>
+            <GradientStop Color="#6C6BE8" Offset="1"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#0E1522"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#EDF2FB"/>
+        <SolidColorBrush x:Key="TextMuted" Color="#8EA0BE"/>
+        <SolidColorBrush x:Key="TextFaint" Color="#5C6C88"/>
+        <SolidColorBrush x:Key="CardBorder" Color="#26324A"/>
+        <SolidColorBrush x:Key="TrackBrush" Color="#22304A"/>
+        <SolidColorBrush x:Key="ToastBrush" Color="#CC1B2540"/>
+        <SolidColorBrush x:Key="BadgeBrush" Color="#4D8DFF"/>
+    </local:BoardWindowBase.Resources>
+
+    <Viewbox Stretch="Uniform">
+        <Grid x:Name="CanvasRoot" Width="1600" Height="900" Background="{DynamicResource BoardBackground}">
+
+            <Rectangle Height="6" VerticalAlignment="Top" Fill="{DynamicResource AccentBrush}"/>
+
+            <Grid x:Name="ContentRoot" Margin="56,44,56,40">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="86"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="132"/>
+                </Grid.RowDefinitions>
+
+                <!-- 顶部：学校 · 班级 · 日期 -->
+                <Grid Grid.Row="0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Width="8" Height="42" CornerRadius="4" Background="{DynamicResource AccentBrush}" VerticalAlignment="Center"/>
+                        <StackPanel Margin="18,0,0,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="TxtSchool" Text="迎春中学" FontSize="22" Foreground="{DynamicResource TextMuted}"/>
+                            <TextBlock x:Name="TxtClass" Text="六年级(1)班" FontSize="40" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock x:Name="TxtDate" Text="2026年11月7日" FontSize="28" Foreground="{DynamicResource TextPrimary}"
+                                   HorizontalAlignment="Right"/>
+                        <TextBlock x:Name="TxtWeekday" Text="星期六" FontSize="20" Foreground="{DynamicResource TextMuted}"
+                                   HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- 主体 -->
+                <Grid x:Name="MainArea" Grid.Row="1" Margin="0,30,0,28">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="34"/>
+                        <ColumnDefinition Width="620"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- 左：时钟 + 当前状态 -->
+                    <Grid x:Name="LeftBlock" Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Bottom">
+                            <TextBlock x:Name="TxtClock" Text="09:41" FontFamily="Consolas, Microsoft YaHei UI"
+                                       FontSize="150" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,-16"/>
+                            <StackPanel VerticalAlignment="Bottom" Margin="12,0,0,24">
+                                <TextBlock x:Name="TxtSeconds" Text=":27" FontFamily="Consolas" FontSize="46"
+                                           Foreground="{DynamicResource TextMuted}"/>
+                                <TextBlock x:Name="TxtAmPm" Text="上午" FontSize="18"
+                                           Foreground="{DynamicResource TextMuted}" Margin="2,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Border x:Name="StatusCard" Grid.Row="1" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource CardBorder}"
+                                BorderThickness="1" CornerRadius="22" Margin="0,26,0,0" Padding="36,30,36,28">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                    <Border x:Name="BadgeBox" Background="{DynamicResource BadgeBrush}" CornerRadius="10"
+                                            Padding="14,6">
+                                        <TextBlock x:Name="TxtBadge" Text="正在上" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    </Border>
+                                    <TextBlock x:Name="TxtSub" Text="张老师 · 第3节 · 10:00 - 10:40" FontSize="21"
+                                               Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                                </StackPanel>
+
+                                <TextBlock x:Name="TxtHeadline" Grid.Row="1" Text="数学" FontSize="96" FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" Margin="0,6,0,0"/>
+
+                                <StackPanel Grid.Row="2">
+                                    <TextBlock x:Name="TxtCountdown" Text="距下课 24:13" FontSize="30"
+                                               Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,16"/>
+                                    <Border x:Name="ProgressTrack" Height="10" CornerRadius="5" Background="{DynamicResource TrackBrush}">
+                                        <Border x:Name="ProgressFill" HorizontalAlignment="Left" Width="0" CornerRadius="5"
+                                                Background="{DynamicResource AccentBrush}"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!-- 右：今日课表 -->
+                    <Border x:Name="TimetableCard" Grid.Column="2" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource CardBorder}"
+                            BorderThickness="1" CornerRadius="22" Padding="28,24,28,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Margin="0,0,0,14">
+                                <TextBlock x:Name="TxtTimetableTitle" Text="今日课表" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"/>
+                                <TextBlock x:Name="TxtTimetableHint" Text="共 8 节" FontSize="16"
+                                           Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <StackPanel x:Name="TimetableRows" Grid.Row="1" VerticalAlignment="Top"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- 底部：值日 -->
+                <Border x:Name="FooterCard" Grid.Row="2" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource CardBorder}"
+                        BorderThickness="1" CornerRadius="22" Padding="32,20">
+                    <Grid x:Name="FooterGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel x:Name="DutyTitleBlock" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,30,0">
+                            <TextBlock x:Name="TxtDutyTitle" Text="今日值日" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"/>
+                            <TextBlock x:Name="TxtDutyDay" Text="星期五" FontSize="16" Foreground="{DynamicResource TextMuted}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <ScrollViewer x:Name="DutyScroll" Grid.Column="1" VerticalAlignment="Center"
+                                      HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+                            <WrapPanel x:Name="DutyPanel" Orientation="Horizontal"/>
+                        </ScrollViewer>
+
+                        <StackPanel x:Name="FooterInfo" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <TextBlock x:Name="TxtLanUrl" Text="手机端未启动" FontSize="15" Foreground="{DynamicResource TextMuted}"
+                                       HorizontalAlignment="Right"/>
+                            <TextBlock x:Name="TxtModeHint" Text="" FontSize="15" Foreground="{DynamicResource TextFaint}"
+                                       HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- 短暂的操作提示 -->
+            <Border x:Name="ToastBox" Background="{DynamicResource ToastBrush}" CornerRadius="14" Padding="26,14"
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,180" Opacity="0"
+                    IsHitTestVisible="False">
+                <TextBlock x:Name="TxtToast" Text="" FontSize="22" Foreground="#FFFFFF"/>
+            </Border>
+        </Grid>
+    </Viewbox>
+</local:BoardWindowBase>

@@ -1,0 +1,35 @@
+# ---- 构建产物 ----
+[Bb]in/
+[Oo]bj/
+*.pdb
+*.cache
+
+# ---- Visual Studio ----
+.vs/
+*.user
+*.suo
+*.userprefs
+*.rsuser
+
+# ---- 运行时数据（含班级名、课表、值日姓名，属于隐私） ----
+data/
+classboard*.json
+
+# ---- 外网隧道客户端（体积大，请自行下载后放到 frp/ 目录） ----
+frp/
+frpc.exe
+frpc.toml
+
+# ---- 生成物 ----
+_check/stubs/XamlStubs.cs
+
+# ---- 日志与临时文件 ----
+*.log
+*.tmp
+Thumbs.db
+desktop.ini
+
+# ---- 编辑器 / 本地工作区 ----
+.workbuddy/
+.vscode/
+.idea/
