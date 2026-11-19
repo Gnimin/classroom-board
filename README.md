@@ -84,17 +84,7 @@ NEWCLASSroom_solution/
 
 如果程序装在只读目录（比如 Program Files），数据会自动落到 `%APPDATA%\NEWCLASSroom`。
 
-## 开发自检
 
-`_check/` 下有一套不依赖 Visual Studio 的自检工具，用来在没有完整 IDE 的环境里验证代码：
-
-```bash
-cd _check
-python gen_stubs.py ../NEWCLASSroom stubs/XamlStubs.cs   # 从 XAML 生成控件桩，供类型检查
-dotnet build BuildCheck.csproj                           # 编译全部 C# 逻辑
-dotnet build Smoke.csproj && ./bin/Debug/net48/Smoke.exe # 冒烟测试：课程判定 + 手机端接口
-python validate_xaml.py ../NEWCLASSroom                  # 检查 XAML 控件名与事件处理函数
-```
 
 ## 已知限制
 
